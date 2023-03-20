@@ -1,18 +1,18 @@
 # README create\_sequence\_tiles.py
 
-- Last modified: mån mar 20, 2023  02:54
+- Last modified: mån mar 20, 2023  02:59
 - Sign: JN
 
-## Description:
+## Description
 
 Parse a genome and a plusone file, print fasta sequences representing
 overlapping tiles covering a window centered at the plusone site.
 
-## Usage:
+## Usage
 
     $ ./create_sequence_tiles.py -p plusonefile.tsv -f genome.fasta
 
-## Options:
+## Options
 
 - `-f, --fasta`   FASTA fasta (genome) file
 - `-p, --plusone` TSV plusone tsv file
@@ -24,17 +24,21 @@ overlapping tiles covering a window centered at the plusone site.
 - `-v, --verbose` increase output verbosity
 - `-V, --version` show program's version number and exit
 
-## Input:
+## Input
 
 - `genome.fasta` Sequence (nt) file in fasta format
 - `plusonefile.tsv` Tab-separated file with information on chromosome names,
   gene names, and plusone positions.  Labels must match the genome file.
 
-## Prerequisites:
+## Prerequisites
 
 Python (> v3.6), with python library pyfaidx.
 
 Installation: 
 
     $ pip install pyfaidx
+
+## License and Copyright
+
+Distributed under terms of the [MIT license](LICENSE).
 
