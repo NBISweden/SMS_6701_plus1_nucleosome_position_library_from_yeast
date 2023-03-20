@@ -1,6 +1,6 @@
 # NBIS Support project 6701
 
-- Last modified: mån mar 20, 2023  02:45
+- Last modified: mån mar 20, 2023  06:05
 - Sign: Johan Nylander
 
 ## Description
@@ -23,5 +23,10 @@ requires two input files: one genome file (nt sequences in fasta format),
 and one plusone-file; a tab-separated file with chromosome labels,
 gene names, and plusone positions.
 
+**XXXX Add text on preparing plusonefile.tsv XXXX**
 
+
+##  Testing
+
+    $ ./scripts/create_sequence_tiles.py -f data/chrI.fa -p data/chrI.tsv
 
