@@ -5,19 +5,14 @@
 # Copyright © 2023 nylander <johan.nylander@nbis.se>
 #
 # Distributed under terms of the MIT license.
-#
-# ./create_sequence_tiles.py -p chrI.tsv -f chrI.fasta
 
-# TODO:
-# - [ ] Print revcomp (genome['chrI'][200:230].complement) with correct info (change strand?) in header
-# - [ ] Decide on the header format. Should be easy to parse (select genes)
-#
 
 """
 Description:
 
-    Parse a genome and a plusone file, print fasta sequences representing overlapping tiles
-    covering a window centered at the plusone site.
+    Parse a genome and a plusone file, print fasta sequences
+    representing overlapping tiles covering a window centered
+    at the plusone site.
 
 Usage:
 
@@ -62,9 +57,6 @@ tile_step_default = 7
 window_size_default = 350
 extension_default = round(window_size_default/2)
 
-# https://pythonhosted.org/pyfaidx/
-#genome['chrI'][200:230].complement
-
 def doParse(args):
 
     if (args.length):
@@ -82,38 +74,64 @@ def doParse(args):
     else:
         extension = extension_default
 
-    genome = Fasta(args.fasta, sequence_always_upper = True)
+    if (args.output):
+        f = open(args.output, "w")
+        if (args.verbose):
+            print(f'Will write output to {args.output}', file = sys.stderr)
 
-    with open(args.plusone, "r", encoding="utf8") as plusone_file:
-        tsv_reader = csv.reader(plusone_file, delimiter="\t")
+    genome = Fasta(args.fasta, sequence_always_upper = True)
+    if (args.verbose):
+        print(f'Reading genome file {args.fasta}', file = sys.stderr)
+
+    with open(args.plusone, "r", encoding = "utf8") as plusone_file:
+
+        tsv_reader = csv.reader(plusone_file, delimiter = "\t")
         next(tsv_reader) # Skip the first row, which is the header. Consider having this inside the loop
 
+        if (args.verbose):
+            print(f'Reading plusone file {args.plusone}', file = sys.stderr)
+
         for row in tsv_reader:
-            # Variable assignments are highly dependent on exact (expected) input!
-            (chrom, strand, name, plus1) = (row[1], row[4], row[6], row[11]) # TODO: Need to take care of 'NA' or ''?
+            # Note: Variable assignments are highly dependent on exact (expected) input!
+            (chrom, strand, name, plus1) = (row[1], row[4], row[6], row[11])
+
             region_start = int(plus1) - extension
             region_stop = int(plus1) + extension
-            region_seq = genome[chrom][region_start:region_stop].seq
+            region_seq = genome.get_seq(chrom, region_start, region_stop, rc = False).seq
+
             region_name = f">{chrom} {name} {strand} {plus1} {region_start}:{region_stop}"
+            region_seq_rc = genome.get_seq(chrom, region_start, region_stop, rc = True).seq
+            region_name_rc = f">{chrom} {name} {strand} {plus1} {region_start}:{region_stop} rc"
 
             if (args.output):
-                with open(args.output, 'w') as f:
-                    j = 0
-                    for i in range(0, len(region_seq) - tile_length + step_size, step_size):
-                        print(f"{region_name} tile_{j}")
-                        j = j + 1
-                        print(region_seq[i: i + tile_length])
-            else:
-                #print(f"{region_name}")
-                #print(f"{region_seq}")
                 j = 0
                 for i in range(0, len(region_seq) - tile_length + step_size, step_size):
-                    print(f"{region_name} tile_{j}")
+                    print(f"{region_name} tile_{j}", file = f)
                     j = j + 1
-                    print(region_seq[i: i + tile_length])
+                    print(region_seq[i: i + tile_length], file = f)
+                j = 0
+                for i in range(0, len(region_seq_rc) - tile_length + step_size, step_size):
+                    print(f"{region_name_rc} tile_{j}", file = f)
+                    j = j + 1
+                    print(region_seq_rc[i: i + tile_length], file = f)
+            else:
+                j = 0
+                for i in range(0, len(region_seq) - tile_length + step_size, step_size):
+                    print(f"{region_name} tile_{j}", file = sys.stdout)
+                    j = j + 1
+                    print(region_seq[i: i + tile_length], file = sys.stdout)
+                j = 0
+                for i in range(0, len(region_seq_rc) - tile_length + step_size, step_size):
+                    print(f"{region_name_rc} tile_{j}", file = sys.stdout)
+                    j = j + 1
+                    print(region_seq_rc[i: i + tile_length], file = sys.stdout)
+
+    if (args.output):
+        if not f.closed:
+            f.close()
 
     if (args.verbose):
-        print('\nEnd of script', file = sys.stderr)
+        print('End of script', file = sys.stderr)
 
 def main():
     if 0 in ((sys.version_info[0] == 3),  (sys.version_info[1] >= 6)):
