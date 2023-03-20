@@ -16,7 +16,7 @@ Description:
 
 Usage:
 
-    $ ./create_sequence_tiles.py -p plusonefile.tsv -f genome.fasta
+    $ ./create_sequence_tiles.py -p plusonefile.tsv -f genome.fa
 
 Options:
 
@@ -26,9 +26,9 @@ Options:
     -l, --length  TILELENGTH length of tile (default: 100)
     -w, --window  WINDOWSIZE size of window (default: 350)
     -o, --output  OUTPUT Output file (default: standard output)
-    -h, --help    show this help message and exit
-    -v, --verbose increase output verbosity
-    -V, --version show program's version number and exit
+    -h, --help    Show this help message and exit
+    -v, --verbose Increase output verbosity
+    -V, --version Show program's version number and exit
 
 Input:
 
@@ -80,13 +80,14 @@ def doParse(args):
             print(f'Will write output to {args.output}', file = sys.stderr)
 
     genome = Fasta(args.fasta, sequence_always_upper = True)
+
     if (args.verbose):
         print(f'Reading genome file {args.fasta}', file = sys.stderr)
 
     with open(args.plusone, "r", encoding = "utf8") as plusone_file:
 
         tsv_reader = csv.reader(plusone_file, delimiter = "\t")
-        next(tsv_reader) # Skip the first row, which is the header. Consider having this inside the loop
+        next(tsv_reader) # Skip the first row, which is assumed to be the header
 
         if (args.verbose):
             print(f'Reading plusone file {args.plusone}', file = sys.stderr)

@@ -1,6 +1,6 @@
 # README create\_sequence\_tiles.py
 
-- Last modified: mån mar 20, 2023  02:59
+- Last modified: mån mar 20, 2023  05:53
 - Sign: JN
 
 ## Description
@@ -10,7 +10,7 @@ overlapping tiles covering a window centered at the plusone site.
 
 ## Usage
 
-    $ ./create_sequence_tiles.py -p plusonefile.tsv -f genome.fasta
+    $ ./create_sequence_tiles.py -p plusonefile.tsv -f genome.fa
 
 ## Options
 
@@ -20,15 +20,18 @@ overlapping tiles covering a window centered at the plusone site.
 - `-l, --length`  TILELENGTH length of tile (default: 100)
 - `-w, --window`  WINDOWSIZE size of window (default: 350)
 - `-o, --output`  OUTPUT Output file (default: standard output)
-- `-h, --help`    show this help message and exit
-- `-v, --verbose` increase output verbosity
-- `-V, --version` show program's version number and exit
+- `-h, --help`    Show this help message and exit
+- `-v, --verbose` Increase output verbosity
+- `-V, --version` Show program's version number and exit
 
 ## Input
 
-- `genome.fasta` Sequence (nt) file in fasta format
+- `genome.fasta` Sequence (nt) file in fasta format.
+
 - `plusonefile.tsv` Tab-separated file with information on chromosome names,
-  gene names, and plusone positions.  Labels must match the genome file.
+  gene names, and plusone positions.  **Labels must match the genome file**.
+  Note: The script assumes that the tsv file contains a header.
+  Furthermore, the column-numbers to be parsed are hard coded in the script.
 
 ## Prerequisites
 
