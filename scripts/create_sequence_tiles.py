@@ -116,7 +116,7 @@ def doParse(args):
         print('\nEnd of script', file = sys.stderr)
 
 def main():
-    if 0 in ((sys.version_info[0] == 3),  (sys.version_info[1] >=11)):
+    if 0 in ((sys.version_info[0] == 3),  (sys.version_info[1] >= 6)):
         print('Error: the script requires python v3.6 or higher')
         exit(1)
 
