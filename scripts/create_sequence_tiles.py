@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
 #
-# Copyright © 2023 nylander <johan.nylander@nrm.se>
+# Copyright © 2023 nylander <johan.nylander@nbis.se>
 #
 # Distributed under terms of the MIT license.
 #
@@ -10,36 +10,43 @@
 
 # TODO:
 # - [ ] Print revcomp (genome['chrI'][200:230].complement) with correct info (change strand?) in header
+# - [ ] Decide on the header format. Should be easy to parse (select genes)
 #
 
 """
 Description:
 
-    Parse a genome and a plusone file, print fasta
+    Parse a genome and a plusone file, print fasta sequences representing overlapping tiles
+    covering a window centered at the plusone site.
 
 Usage:
 
-    text
+    $ ./create_sequence_tiles.py -p plusonefile.tsv -f genome.fasta
 
 Options:
 
-    -f, --fasta FASTA fasta (genome) file
+    -f, --fasta   FASTA fasta (genome) file
     -p, --plusone TSV plusone tsv file
-    -s, --step STEPSIZE tile increment step size
-    -l, --length TILELENGTH length of tile
-    -w, --window WINDOWSIZE size of window
-    -o, --output OUTPUT Output file (default: standard output)
-    -h, --help show this help message and exit
+    -s, --step    STEPSIZE tile increment step size (default: 7)
+    -l, --length  TILELENGTH length of tile (default: 100)
+    -w, --window  WINDOWSIZE size of window (default: 350)
+    -o, --output  OUTPUT Output file (default: standard output)
+    -h, --help    show this help message and exit
     -v, --verbose increase output verbosity
     -V, --version show program's version number and exit
 
-Examples:
+Input:
 
-    text
+    genome.fasta    Sequence (nt) file in fasta format
+    plusonefile.tsv Tab-separated file with information on chromosome names,
+                    gene names, and plusone positions.
+                    Labels must match the genome file.
 
 Prerequisites:
 
-    text
+    Python (> v3.6), with python library pyfaidx.
+
+    Installation: pip install pyfaidx
 
 """
 
@@ -109,6 +116,10 @@ def doParse(args):
         print('\nEnd of script', file = sys.stderr)
 
 def main():
+    if 0 in ((sys.version_info[0] == 3),  (sys.version_info[1] >=11)):
+        print('Error: the script requires python v3.6 or higher')
+        exit(1)
+
     parser = argparse.ArgumentParser(
             prog = 'create_sequence_tiles',
             description = 'Parse genome file and plusone file',
