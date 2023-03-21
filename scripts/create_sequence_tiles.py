@@ -21,7 +21,8 @@ Usage:
 Options:
 
     -f, --fasta   FASTA fasta (genome) file
-    -p, --plusone TSV plusone tsv file
+    -p, --plusone TSV plusone tsv file formatted as GSE140614_+1coordiantesETC_tirosh_32U.tab
+    -P, --Plusone TSV plusone tsv file with chr strand name plus1
     -s, --step    STEPSIZE tile increment step size (default: 7)
     -l, --length  TILELENGTH length of tile (default: 100)
     -w, --window  WINDOWSIZE size of window (default: 350)
@@ -34,8 +35,9 @@ Input:
 
     genome.fasta    Sequence (nt) file in fasta format
     plusonefile.tsv Tab-separated file with information on chromosome names,
-                    gene names, and plusone positions.
+                    strand, gene names, and plusone positions.
                     Labels must match the genome file.
+                    Currently, two input formats are allowed (see -p, -P).
 
 Prerequisites:
 
@@ -46,55 +48,76 @@ Prerequisites:
 """
 
 import sys
-import re
 import argparse
 import csv
 from pyfaidx import Fasta
 
 __version__ = '0.1'
-tile_length_default = 100
-tile_step_default = 7
-window_size_default = 350
-extension_default = round(window_size_default/2)
 
-def doParse(args):
+PLUSONE_COLUMNS_DEFAULT = (1, 4, 6, 11) # Format as in GSE140614_+1coordiantesETC_tirosh_32U.tab
+PLUSONE_COLUMNS_SIMPLE =  (0, 1, 2, 3) # chr strand name plus1
 
-    if (args.length):
+TILE_LENGTH_DEFAULT = 100
+TILE_STEP_DEFAULT = 7
+WINDOW_SIZE_DEFAULT = 350
+extension_default = round(WINDOW_SIZE_DEFAULT/2)
+
+def do_parse(args):
+    """
+    Function for parsing
+    """
+
+    if args.length:
         tile_length = args.length
     else:
-        tile_length = tile_length_default
+        tile_length = TILE_LENGTH_DEFAULT
 
-    if (args.step):
+    if args.step:
         step_size = args.step
     else:
-        step_size = tile_step_default
+        step_size = TILE_STEP_DEFAULT
 
-    if (args.window):
+    if args.window:
         extension = round(args.window/2)
     else:
         extension = extension_default
 
-    if (args.output):
-        f = open(args.output, "w")
-        if (args.verbose):
+    if args.output:
+        out_file = open(args.output, "w", encoding = "utf8")
+        if args.verbose:
             print(f'Will write output to {args.output}', file = sys.stderr)
+    else:
+        if args.verbose:
+            print('Will write output to standard out', file = sys.stderr)
+
+    if args.Plusone:
+        p_file = args.Plusone
+        pos = PLUSONE_COLUMNS_SIMPLE
+        if args.verbose:
+            print('Assuming \'chr strand name plus1\' as columns in plusone file',
+                    file = sys.stderr)
+    else:
+        p_file = args.plusone
+        pos = PLUSONE_COLUMNS_DEFAULT
 
     genome = Fasta(args.fasta, sequence_always_upper = True)
 
-    if (args.verbose):
+    if args.verbose:
         print(f'Reading genome file {args.fasta}', file = sys.stderr)
 
-    with open(args.plusone, "r", encoding = "utf8") as plusone_file:
+    with open(p_file, "r", encoding = "utf8") as plusone_file:
 
         tsv_reader = csv.reader(plusone_file, delimiter = "\t")
         next(tsv_reader) # Skip the first row, which is assumed to be the header
 
-        if (args.verbose):
-            print(f'Reading plusone file {args.plusone}', file = sys.stderr)
+        if args.verbose:
+            print(f'Reading plusone file {p_file}', file = sys.stderr)
 
         for row in tsv_reader:
-            # Note: Variable assignments are highly dependent on exact (expected) input!
-            (chrom, strand, name, plus1) = (row[1], row[4], row[6], row[11])
+            (chrom, strand, name, plus1) = (row[pos[0]], row[pos[1]], row[pos[2]], row[pos[3]])
+
+            if plus1 == 'NA':
+                continue
 
             region_start = int(plus1) - extension
             region_stop = int(plus1) + extension
@@ -104,17 +127,17 @@ def doParse(args):
             region_seq_rc = genome.get_seq(chrom, region_start, region_stop, rc = True).seq
             region_name_rc = f">{chrom} {name} {strand} {plus1} {region_start}:{region_stop} rc"
 
-            if (args.output):
+            if args.output:
                 j = 0
                 for i in range(0, len(region_seq) - tile_length + step_size, step_size):
-                    print(f"{region_name} tile_{j}", file = f)
+                    print(f"{region_name} tile_{j}", file = out_file)
                     j = j + 1
-                    print(region_seq[i: i + tile_length], file = f)
+                    print(region_seq[i: i + tile_length], file = out_file)
                 j = 0
                 for i in range(0, len(region_seq_rc) - tile_length + step_size, step_size):
-                    print(f"{region_name_rc} tile_{j}", file = f)
+                    print(f"{region_name_rc} tile_{j}", file = out_file)
                     j = j + 1
-                    print(region_seq_rc[i: i + tile_length], file = f)
+                    print(region_seq_rc[i: i + tile_length], file = out_file)
             else:
                 j = 0
                 for i in range(0, len(region_seq) - tile_length + step_size, step_size):
@@ -127,18 +150,20 @@ def doParse(args):
                     j = j + 1
                     print(region_seq_rc[i: i + tile_length], file = sys.stdout)
 
-    if (args.output):
-        if not f.closed:
-            f.close()
+    if args.output:
+        if not out_file.closed:
+            out_file.close()
 
-    if (args.verbose):
+    if args.verbose:
         print('End of script', file = sys.stderr)
 
 def main():
-    if 0 in ((sys.version_info[0] == 3),  (sys.version_info[1] >= 6)):
+    """
+    Check arguments, and run do_parse
+    """
+    if 0 in ((sys.version_info[0] == 3), (sys.version_info[1] >= 6)):
         print('Error: the script requires python v3.6 or higher')
-        exit(1)
-
+        sys.exit(1)
     parser = argparse.ArgumentParser(
             prog = 'create_sequence_tiles',
             description = 'Parse genome file and plusone file',
@@ -147,18 +172,14 @@ def main():
             required = True,
             type = str,
             help = 'fasta (genome) file')
-    parser.add_argument('-p', '--plusone',
-            required = True,
-            type = str,
-            help = 'Plusone file')
     parser.add_argument('-l', '--length',
-            type = int, nargs = '?', default = tile_length_default,
+            type = int, nargs = '?', default = TILE_LENGTH_DEFAULT,
             help = 'length of tile')
     parser.add_argument('-s', '--step',
-            type = int, nargs = '?', default = tile_step_default,
+            type = int, nargs = '?', default = TILE_STEP_DEFAULT,
             help = 'tile increment step size')
     parser.add_argument('-w', '--window',
-            type = int, nargs = '?', default = window_size_default,
+            type = int, nargs = '?', default = WINDOW_SIZE_DEFAULT,
             help = 'window size')
     parser.add_argument('-o', '--output',
             type = str, nargs = '?',
@@ -169,10 +190,16 @@ def main():
     parser.add_argument('-V', '--version',
             action = 'version',
             version = '%(prog)s version ' + __version__)
-    parser.set_defaults(func = doParse)
+    group = parser.add_mutually_exclusive_group(required = True)
+    group.add_argument('-p', '--plusone',
+            type = str,
+            help = 'TSV file formatted as GSE140614_+1coordiantesETC_tirosh_32U.tab')
+    group.add_argument('-P', '--Plusone',
+            type = str,
+            help = 'TSV file with \'chr strand name plus1\'')
+    parser.set_defaults(func = do_parse)
     args = parser.parse_args()
     args.func(args)
 
-if ( __name__ == "__main__"):
+if __name__ == "__main__":
     main()
-
