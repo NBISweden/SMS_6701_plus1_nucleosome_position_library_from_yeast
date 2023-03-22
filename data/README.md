@@ -1,6 +1,6 @@
 # README.md
 
-- Last modified: tis mar 21, 2023  02:54
+- Last modified: ons mar 22, 2023  10:37
 - Sign: nylander
 
 ## Description
@@ -45,7 +45,7 @@ The ones with an asterisk are selected.
         22	TSStoTTSLength
         23	dyadtodyadcenter
 
-Create the `plusonefile.tsv` file (using gunzip and awk)
+Create the `plusonefile.tsv` file (using gunzip and awk. Note that column numbering starts at 1)
 
     $ gunzip -c GSE140614_+1coordiantesETC_tirosh_32U.tab.gz | \
           awk -v FS='\t' -v OFS='\t' '{print $2, $5, $7, $11}' > plusonefile.tsv
