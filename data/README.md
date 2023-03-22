@@ -1,7 +1,8 @@
 # README.md
 
-- Last modified: ons mar 22, 2023  05:13
+- Last modified: ons mar 22, 2023  05:51
 - Sign: nylander
+
 
 ## Description
 
@@ -10,11 +11,11 @@ Prepare data for input to script.
 
 ### Genome
 
-    # Should be the correct genome used according to Klaus Brackmann ons 22 mar 2023 16:48:51
+Should be the correct genome used according to Klaus Brackmann ons 22 mar 2023 16:48:51.
+Need to correct the fasta headers in this version of the genome to match the plusone-file.
+
     $ wget "http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Saccharomyces_cerevisiae/Ensembl/R64-1-1/Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz"
     $ tar --strip-components 5 -xf Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz Saccharomyces_cerevisiae/Ensembl/R64-1-1/Sequence/WholeGenomeFasta/genome.fa
-
-    # Need to correct the fasta headers in this version of the genome to match the plusone-file
     $ sed -i '/>/ s/>/>chr/' genome.fa
 
 

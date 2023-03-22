@@ -1,6 +1,6 @@
 # NBIS Support project 6701
 
-- Last modified: ons mar 22, 2023  05:15
+- Last modified: ons mar 22, 2023  05:56
 - Sign: Johan Nylander
 
 
@@ -18,32 +18,29 @@
 > a much more automatized and faster way.
 
 
-## Input data
-
-The script [`create_sequence_tiles.py`](scripts/create_sequence_tiles.py)
-requires two input files: one genome file (nt sequences in fasta format), and
-one plusone-file; a tab-separated file with chromosome labels, gene names, and
-plusone positions.
-
-Suggestions on how to prepare these files from published material can be found
-in the [README.md](data/README.md) file inside the data folder.
-
-
 ## Script `create_sequence_tiles.py`
 
 A script, [`create_sequence_tiles.py`](scripts/create_sequence_tiles.py), was
 prepared for the task of generating sequence tiles covering plusone positions
-and is available in the script folder.
-
-To run the script, the [python interpreter](https://www.python.org/) needs to
-installed together with the python library
-[`pyfaidx`](https://pypi.org/project/pyfaidx/).
-
-More instructions on how to use the script are found in the
-[README.md](scripts/README.md) file in the scripts folder.
+and is available in the scripts folder. More instructions on how to use the
+script are found in the [README.md](scripts/README.md) file in the scripts
+folder.
 
 
-## Output data
+### Input data
+
+Two input files are required:
+
+1. Genome file in fasta format:
+   [Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz](http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Saccharomyces_cerevisiae/Ensembl/R64-1-1/Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz)
+2. File with information on plusone positions:
+   [GSE140614_+1coordiantesETC_tirosh_32U.tab.gz](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE140614&format=file&file=GSE140614%5F%2B1coordiantesETC%5Ftirosh%5F32U%2Etab%2Egz)
+
+Examples on how to download and prepare the data are given in the
+[README.md](data/README.md) file in the data folder.
+
+
+### Output data from the script
 
 The output data are tiled nt sequences of length `L`, covering a window size of
 `W` centered on a plusone position `P` on the input genome, and with a tiling
@@ -56,7 +53,8 @@ The parameters `L`, `W`, and `S` can be altered by options in the script. The
 positions `P` are read from the `plusonefile.tsv` file.
 
 
-##  Testing on smaller data
+## Workflow example
 
-    $ ./scripts/create_sequence_tiles.py -f data/chrI.fa -p data/chrI.tsv
+Example of full workflow for preparing and generating data can be found in the
+file [Notebook.md](Notebook.md).
 
