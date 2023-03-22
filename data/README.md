@@ -1,16 +1,22 @@
 # README.md
 
-- Last modified: ons mar 22, 2023  10:37
+- Last modified: ons mar 22, 2023  05:13
 - Sign: nylander
 
 ## Description
 
 Prepare data for input to script.
 
+
 ### Genome
 
-    $ wget http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Saccharomyces_cerevisiae/UCSC/sacCer3/Saccharomyces_cerevisiae_UCSC_sacCer3.tar.gz
-    $ tar --strip-components 5 -xf Saccharomyces_cerevisiae_UCSC_sacCer3.tar.gz Saccharomyces_cerevisiae/UCSC/sacCer3/Sequence/WholeGenomeFasta/genome.fa
+    # Should be the correct genome used according to Klaus Brackmann ons 22 mar 2023 16:48:51
+    $ wget "http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Saccharomyces_cerevisiae/Ensembl/R64-1-1/Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz"
+    $ tar --strip-components 5 -xf Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz Saccharomyces_cerevisiae/Ensembl/R64-1-1/Sequence/WholeGenomeFasta/genome.fa
+
+    # Need to correct the fasta headers in this version of the genome to match the plusone-file
+    $ sed -i '/>/ s/>/>chr/' genome.fa
+
 
 ### Plusone file
 

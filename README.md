@@ -1,7 +1,8 @@
 # NBIS Support project 6701
 
-- Last modified: tis mar 21, 2023  02:51
+- Last modified: ons mar 22, 2023  05:15
 - Sign: Johan Nylander
+
 
 ## Description
 
@@ -27,6 +28,7 @@ plusone positions.
 Suggestions on how to prepare these files from published material can be found
 in the [README.md](data/README.md) file inside the data folder.
 
+
 ## Script `create_sequence_tiles.py`
 
 A script, [`create_sequence_tiles.py`](scripts/create_sequence_tiles.py), was
@@ -40,6 +42,7 @@ installed together with the python library
 More instructions on how to use the script are found in the
 [README.md](scripts/README.md) file in the scripts folder.
 
+
 ## Output data
 
 The output data are tiled nt sequences of length `L`, covering a window size of
@@ -51,6 +54,7 @@ the second as reverse-complements of the first set.
 
 The parameters `L`, `W`, and `S` can be altered by options in the script. The
 positions `P` are read from the `plusonefile.tsv` file.
+
 
 ##  Testing on smaller data
 
