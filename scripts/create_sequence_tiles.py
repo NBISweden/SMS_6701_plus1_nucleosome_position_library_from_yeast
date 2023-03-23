@@ -52,6 +52,7 @@ import argparse
 import csv
 from pyfaidx import Fasta
 
+
 __version__ = '0.2'
 
 PLUSONE_COLUMNS_DEFAULT = (1, 4, 6, 11) # Format as in GSE140614_+1coordiantesETC_tirosh_32U.tab. Zero-based.
@@ -71,42 +72,33 @@ def get_args():
             prog = 'create_sequence_tiles',
             description = 'Parse genome file and plusone file',
             formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument(
-            '-f', '--fasta',
+    parser.add_argument('-f', '--fasta',
             required = True,
             type = str,
             help = 'fasta (genome) file')
-    parser.add_argument(
-            '-l', '--length',
+    parser.add_argument('-l', '--length',
             type = int, nargs = '?', default = TILE_LENGTH_DEFAULT,
             help = 'length of tile')
-    parser.add_argument(
-            '-s', '--step',
+    parser.add_argument('-s', '--step',
             type = int, nargs = '?', default = TILE_STEP_DEFAULT,
             help = 'tile increment step size')
-    parser.add_argument(
-            '-w', '--window',
+    parser.add_argument('-w', '--window',
             type = int, nargs = '?', default = WINDOW_SIZE_DEFAULT,
             help = 'window size')
-    parser.add_argument(
-            '-o', '--output',
+    parser.add_argument('-o', '--output',
             type = str, nargs = '?',
             help = 'output file (default: standard output)')
-    parser.add_argument(
-            '-v', '--verbose',
+    parser.add_argument('-v', '--verbose',
             action = 'store_true',
             help = 'increase output verbosity')
-    parser.add_argument(
-            '-V', '--version',
+    parser.add_argument('-V', '--version',
             action = 'version',
             version = '%(prog)s version ' + __version__)
     group = parser.add_mutually_exclusive_group(required = True)
-    group.add_argument(
-            '-p', '--plusone',
+    group.add_argument('-p', '--plusone',
             type = str,
             help = 'TSV file formatted as GSE140614_+1coordiantesETC_tirosh_32U.tab')
-    group.add_argument(
-            '-P', '--Plusone',
+    group.add_argument('-P', '--Plusone',
             type = str,
             help = 'TSV file with \'chr strand name plus1\'')
     args = parser.parse_args()
@@ -157,16 +149,12 @@ def main():
         p_file = args.plusone
         pos = PLUSONE_COLUMNS_DEFAULT
 
-    ##### args: args.fasta
     genome = Fasta(args.fasta, sequence_always_upper = True)
-    #####
 
     if args.verbose:
         print(f'Reading genome file {args.fasta}', file = sys.stderr)
 
-    ####################################### args: p_file, plusone_file, genome, out_file
     with open(p_file, "r", encoding = "utf8") as plusone_file:
-
         tsv_reader = csv.reader(plusone_file, delimiter = "\t")
         next(tsv_reader) # Skip the first row, which is assumed to be the header
 
@@ -213,9 +201,6 @@ def main():
     if args.output:
         if not out_file.closed:
             out_file.close()
-
-    #######################################
-
 
     if args.verbose:
         print('End of script', file = sys.stderr)
