@@ -1,6 +1,6 @@
 # Notebook
 
-- Last modified: ons mar 22, 2023  05:57
+- Last modified: tor mar 23, 2023  01:31
 - Sign: Johan Nylander
 
 
@@ -42,7 +42,9 @@ Need to correct the fasta headers in this version of the genome to match the plu
     $ sed -i '/>/ s/>/>chr/' genome.fa
 
 
-### Create tiles (note the capital `-P` argument)
+### Create tiles
+
+Note the capital `-P` argument when using the format in the GSE140614 file
 
     $ ../scripts/create_sequence_tiles.py -f genome.fa -P plusonefile.tsv -o outfile.fas
 
@@ -63,7 +65,9 @@ Need to correct the fasta headers in this version of the genome to match the plu
         parallel 'grep -w {} outfile.tsv | ../scripts/tab2fasta > chroms/{}.fas'
 
 
-### Get gene names. Note: some of the names can be lists (e.g. `YOR008W-B, YOR009W`)
+### Get gene names
+
+Note: some of the names can be lists (e.g. `YOR008W-B, YOR009W`)
 
     $ perl -ne 'if (/^\S+\s([\S\s]+)\s[+-]/) {print "$1\n"}' outfile.tsv | \
         sort -u > genes/genes.txt
@@ -112,19 +116,18 @@ Note: Some genes seems to have more than one plusone position:
     $ rm genome.fa.fai GSE140614_+1coordiantesETC_tirosh_32U.tab.gz Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz
 
 
-### Package run folder (25 MB)
+### Package (compress) run folder (25 MB)
 
-   $ cd ..
-   $ mv run NBIS_SMS_6701_data
-   $ tar czf NBIS_SMS_6701_data.tgz NBIS_SMS_6701_data
+    $ cd ..
+    $ mv run NBIS_SMS_6701_data
+    $ tar czf NBIS_SMS_6701_data.tgz NBIS_SMS_6701_data
 
 
 ## Requirements
 
-All analyses was run on Linux operating system (Ubuntu 20.04).
-
-In addition to standard shell (bash) commands, including python and perl, 
-the following software was used
+All analyses was run on Linux operating system (Ubuntu 20.04). In addition to
+standard shell (bash) commands, including python and perl, the following
+software was used
 
 - `git` <https://git-scm.com/>
 - `parallel` <https://www.gnu.org/software/parallel/>
