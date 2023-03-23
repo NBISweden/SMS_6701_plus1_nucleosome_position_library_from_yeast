@@ -52,20 +52,77 @@ import argparse
 import csv
 from pyfaidx import Fasta
 
-__version__ = '0.1'
+__version__ = '0.2'
 
-PLUSONE_COLUMNS_DEFAULT = (1, 4, 6, 11) # Format as in GSE140614_+1coordiantesETC_tirosh_32U.tab
-PLUSONE_COLUMNS_SIMPLE =  (0, 1, 2, 3) # chr strand name plus1
+PLUSONE_COLUMNS_DEFAULT = (1, 4, 6, 11) # Format as in GSE140614_+1coordiantesETC_tirosh_32U.tab. Zero-based.
+PLUSONE_COLUMNS_SIMPLE =  (0, 1, 2, 3) # Simple format: chr strand name plus1
 
 TILE_LENGTH_DEFAULT = 100
 TILE_STEP_DEFAULT = 7
 WINDOW_SIZE_DEFAULT = 350
 extension_default = round(WINDOW_SIZE_DEFAULT/2)
 
-def do_parse(args):
+
+def get_args():
     """
-    Function for parsing
+    Parse arguments
     """
+    parser = argparse.ArgumentParser(
+            prog = 'create_sequence_tiles',
+            description = 'Parse genome file and plusone file',
+            formatter_class = argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+            '-f', '--fasta',
+            required = True,
+            type = str,
+            help = 'fasta (genome) file')
+    parser.add_argument(
+            '-l', '--length',
+            type = int, nargs = '?', default = TILE_LENGTH_DEFAULT,
+            help = 'length of tile')
+    parser.add_argument(
+            '-s', '--step',
+            type = int, nargs = '?', default = TILE_STEP_DEFAULT,
+            help = 'tile increment step size')
+    parser.add_argument(
+            '-w', '--window',
+            type = int, nargs = '?', default = WINDOW_SIZE_DEFAULT,
+            help = 'window size')
+    parser.add_argument(
+            '-o', '--output',
+            type = str, nargs = '?',
+            help = 'output file (default: standard output)')
+    parser.add_argument(
+            '-v', '--verbose',
+            action = 'store_true',
+            help = 'increase output verbosity')
+    parser.add_argument(
+            '-V', '--version',
+            action = 'version',
+            version = '%(prog)s version ' + __version__)
+    group = parser.add_mutually_exclusive_group(required = True)
+    group.add_argument(
+            '-p', '--plusone',
+            type = str,
+            help = 'TSV file formatted as GSE140614_+1coordiantesETC_tirosh_32U.tab')
+    group.add_argument(
+            '-P', '--Plusone',
+            type = str,
+            help = 'TSV file with \'chr strand name plus1\'')
+    args = parser.parse_args()
+    return args
+
+
+def main():
+    """
+    Main
+    """
+
+    if 0 in ((sys.version_info[0] == 3), (sys.version_info[1] >= 6)):
+        print('Error: the script requires python v3.6 or higher')
+        sys.exit(1)
+
+    args = get_args()
 
     if args.length:
         tile_length = args.length
@@ -100,11 +157,14 @@ def do_parse(args):
         p_file = args.plusone
         pos = PLUSONE_COLUMNS_DEFAULT
 
+    ##### args: args.fasta
     genome = Fasta(args.fasta, sequence_always_upper = True)
+    #####
 
     if args.verbose:
         print(f'Reading genome file {args.fasta}', file = sys.stderr)
 
+    ####################################### args: p_file, plusone_file, genome, out_file
     with open(p_file, "r", encoding = "utf8") as plusone_file:
 
         tsv_reader = csv.reader(plusone_file, delimiter = "\t")
@@ -154,52 +214,12 @@ def do_parse(args):
         if not out_file.closed:
             out_file.close()
 
+    #######################################
+
+
     if args.verbose:
         print('End of script', file = sys.stderr)
 
-def main():
-    """
-    Check arguments, and run do_parse
-    """
-    if 0 in ((sys.version_info[0] == 3), (sys.version_info[1] >= 6)):
-        print('Error: the script requires python v3.6 or higher')
-        sys.exit(1)
-    parser = argparse.ArgumentParser(
-            prog = 'create_sequence_tiles',
-            description = 'Parse genome file and plusone file',
-            formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-f', '--fasta',
-            required = True,
-            type = str,
-            help = 'fasta (genome) file')
-    parser.add_argument('-l', '--length',
-            type = int, nargs = '?', default = TILE_LENGTH_DEFAULT,
-            help = 'length of tile')
-    parser.add_argument('-s', '--step',
-            type = int, nargs = '?', default = TILE_STEP_DEFAULT,
-            help = 'tile increment step size')
-    parser.add_argument('-w', '--window',
-            type = int, nargs = '?', default = WINDOW_SIZE_DEFAULT,
-            help = 'window size')
-    parser.add_argument('-o', '--output',
-            type = str, nargs = '?',
-            help = 'output file (default: standard output)')
-    parser.add_argument('-v', '--verbose',
-            action = 'store_true',
-            help = 'increase output verbosity')
-    parser.add_argument('-V', '--version',
-            action = 'version',
-            version = '%(prog)s version ' + __version__)
-    group = parser.add_mutually_exclusive_group(required = True)
-    group.add_argument('-p', '--plusone',
-            type = str,
-            help = 'TSV file formatted as GSE140614_+1coordiantesETC_tirosh_32U.tab')
-    group.add_argument('-P', '--Plusone',
-            type = str,
-            help = 'TSV file with \'chr strand name plus1\'')
-    parser.set_defaults(func = do_parse)
-    args = parser.parse_args()
-    args.func(args)
 
 if __name__ == "__main__":
     main()
