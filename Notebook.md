@@ -1,6 +1,6 @@
 # Notebook
 
-- Last modified: mån mar 27, 2023  04:56
+- Last modified: mån mar 27, 2023  05:03
 - Sign: Johan Nylander
 
 
@@ -36,16 +36,11 @@ See [Requirements](#requirements) for software used.
 
 Should be the correct genome used according to Klaus Brackmann ons 22 mar 2023.
 Need to correct the fasta headers in this version of the genome to match the plusone-file.
-See also atlernative below.
+See also description of alternative genome file in [data/README.md](data/README.md) .
 
     $ wget "http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Saccharomyces_cerevisiae/Ensembl/R64-1-1/Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz"
     $ tar --strip-components 5 -xf Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz Saccharomyces_cerevisiae/Ensembl/R64-1-1/Sequence/WholeGenomeFasta/genome.fa
     $ sed -i '/>/ s/>/>chr/' genome.fa
-
-**Alternative**: Use the UCSC sacCer3 genome (has the same fasta headers as the GSE140614-file)
-
-    $ wget "http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Saccharomyces_cerevisiae/UCSC/sacCer3/Saccharomyces_cerevisiae_UCSC_sacCer3.tar.gz"
-    $ tar --strip-components 5 -xf Saccharomyces_cerevisiae_UCSC_sacCer3.tar.gz  Saccharomyces_cerevisiae/UCSC/sacCer3/Sequence/WholeGenomeFasta/genome.fa
 
 
 ### Create tiles

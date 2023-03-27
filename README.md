@@ -1,6 +1,6 @@
 # NBIS Support project 6701
 
-- Last modified: ons mar 22, 2023  05:56
+- Last modified: mån mar 27, 2023  05:06
 - Sign: Johan Nylander
 
 
@@ -33,6 +33,7 @@ Two input files are required:
 
 1. Genome file in fasta format:
    [Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz](http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Saccharomyces_cerevisiae/Ensembl/R64-1-1/Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz)
+   (See also the use of alternative genome file in [data/README.md](data/README.md).)
 2. File with information on plusone positions:
    [GSE140614_+1coordiantesETC_tirosh_32U.tab.gz](https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE140614&format=file&file=GSE140614%5F%2B1coordiantesETC%5Ftirosh%5F32U%2Etab%2Egz)
 
