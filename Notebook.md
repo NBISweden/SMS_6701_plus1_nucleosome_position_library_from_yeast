@@ -1,6 +1,6 @@
 # Notebook
 
-- Last modified: mån mar 27, 2023  05:03
+- Last modified: ons mar 29, 2023  03:19
 - Sign: Johan Nylander
 
 
@@ -34,9 +34,10 @@ See [Requirements](#requirements) for software used.
 
 ### Download genome data
 
-Should be the correct genome used according to Klaus Brackmann ons 22 mar 2023.
-Need to correct the fasta headers in this version of the genome to match the plusone-file.
-See also description of alternative genome file in [data/README.md](data/README.md) .
+Should be the correct genome used according to Klaus Brackmann Wed 22 mar 2023.
+We do need, however, to correct the fasta headers in this version of the genome
+to match the plusone-file.  See also description of alternative genome file in
+[data/README.md](data/README.md).
 
     $ wget "http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Saccharomyces_cerevisiae/Ensembl/R64-1-1/Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz"
     $ tar --strip-components 5 -xf Saccharomyces_cerevisiae_Ensembl_R64-1-1.tar.gz Saccharomyces_cerevisiae/Ensembl/R64-1-1/Sequence/WholeGenomeFasta/genome.fa
@@ -50,7 +51,7 @@ Note the capital `-P` argument when using the format in the GSE140614 file
     $ ../scripts/create_sequence_tiles.py -f genome.fa -P plusonefile.tsv -o outfile.fas
 
 
-### Convert to tab
+### Convert to tab-separated values format
 
     $ ../scripts/fasta2tab outfile.fas > outfile.tsv
 
@@ -79,7 +80,6 @@ Note: some of the names can be lists (e.g. `YOR008W-B, YOR009W`)
     $ do_grep() {
         string="$1"
         fname="${string//, /_}"
-        rex=
         rex="[^,][[:space:]]$string[[:space:]]" # hack using the [^,]
         grep -E "$rex" outfile.tsv | ../scripts/tab2fasta > genes/"$fname".fas
     }
@@ -87,7 +87,7 @@ Note: some of the names can be lists (e.g. `YOR008W-B, YOR009W`)
     $ cat genes/genes.txt | parallel do_grep "{}"
 
 
-Note: Some genes seems to have more than one plusone position:
+Note: Some genes have more than one plusone position:
 
     YDL154W
     YGR067C
