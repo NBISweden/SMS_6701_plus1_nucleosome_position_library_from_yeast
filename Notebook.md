@@ -1,6 +1,6 @@
 # Notebook
 
-- Last modified: ons mar 29, 2023  03:19
+- Last modified: ons mar 29, 2023  03:25
 - Sign: Johan Nylander
 
 
@@ -46,7 +46,7 @@ to match the plusone-file.  See also description of alternative genome file in
 
 ### Create tiles
 
-Note the capital `-P` argument when using the format in the GSE140614 file
+Note the capital `-P` argument when using the simplified format of the plusone file.
 
     $ ../scripts/create_sequence_tiles.py -f genome.fa -P plusonefile.tsv -o outfile.fas
 
