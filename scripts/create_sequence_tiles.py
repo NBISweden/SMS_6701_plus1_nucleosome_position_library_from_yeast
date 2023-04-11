@@ -55,8 +55,8 @@ from pyfaidx import Fasta
 
 __version__ = '0.2'
 
-PLUSONE_COLUMNS_DEFAULT = (1, 4, 6, 11) # Format as in GSE140614_+1coordiantesETC_tirosh_32U.tab. Zero-based.
-PLUSONE_COLUMNS_SIMPLE =  (0, 1, 2, 3) # Simple format: chr strand name plus1
+PLUSONE_COLUMNS_DEFAULT = (1, 4, 6, 11)  # Format as in GSE140614_+1coordiantesETC_tirosh_32U.tab. Zero-based.
+PLUSONE_COLUMNS_SIMPLE = (0, 1, 2, 3)  # Simple format: chr strand name plus1
 
 TILE_LENGTH_DEFAULT = 100
 TILE_STEP_DEFAULT = 7
@@ -69,38 +69,38 @@ def get_args():
     Parse arguments
     """
     parser = argparse.ArgumentParser(
-            prog = 'create_sequence_tiles',
-            description = 'Parse genome file and plusone file',
-            formatter_class = argparse.ArgumentDefaultsHelpFormatter)
+            prog='create_sequence_tiles',
+            description='Parse genome file and plusone file',
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-f', '--fasta',
-            required = True,
-            type = str,
-            help = 'fasta (genome) file')
+                        required=True,
+                        type=str,
+                        help='fasta (genome) file')
     parser.add_argument('-l', '--length',
-            type = int, nargs = '?', default = TILE_LENGTH_DEFAULT,
-            help = 'length of tile')
+                        type=int, nargs='?', default=TILE_LENGTH_DEFAULT,
+                        help='length of tile')
     parser.add_argument('-s', '--step',
-            type = int, nargs = '?', default = TILE_STEP_DEFAULT,
-            help = 'tile increment step size')
+                        type=int, nargs='?', default=TILE_STEP_DEFAULT,
+                        help='tile increment step size')
     parser.add_argument('-w', '--window',
-            type = int, nargs = '?', default = WINDOW_SIZE_DEFAULT,
-            help = 'window size')
+                        type=int, nargs='?', default=WINDOW_SIZE_DEFAULT,
+                        help='window size')
     parser.add_argument('-o', '--output',
-            type = str, nargs = '?',
-            help = 'output file (default: standard output)')
+                        type=str, nargs='?',
+                        help='output file (default: standard output)')
     parser.add_argument('-v', '--verbose',
-            action = 'store_true',
-            help = 'increase output verbosity')
+                        action='store_true',
+                        help='increase output verbosity')
     parser.add_argument('-V', '--version',
-            action = 'version',
-            version = '%(prog)s version ' + __version__)
-    group = parser.add_mutually_exclusive_group(required = True)
+                        action='version',
+                        version='%(prog)s version ' + __version__)
+    group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-p', '--plusone',
-            type = str,
-            help = 'TSV file formatted as GSE140614_+1coordiantesETC_tirosh_32U.tab')
+                       type=str,
+                       help='TSV file formatted as GSE140614_+1coordiantesETC_tirosh_32U.tab')
     group.add_argument('-P', '--Plusone',
-            type = str,
-            help = 'TSV file with \'chr strand name plus1\'')
+                       type=str,
+                       help='TSV file with \'chr strand name plus1\'')
     args = parser.parse_args()
     return args
 
@@ -132,34 +132,34 @@ def main():
         extension = extension_default
 
     if args.output:
-        out_file = open(args.output, "w", encoding = "utf8")
+        out_file = open(args.output, "w", encoding="utf8")
         if args.verbose:
-            print(f'Will write output to {args.output}', file = sys.stderr)
+            print(f'Will write output to {args.output}', file=sys.stderr)
     else:
         if args.verbose:
-            print('Will write output to standard out', file = sys.stderr)
+            print('Will write output to standard out', file=sys.stderr)
 
     if args.Plusone:
         p_file = args.Plusone
         pos = PLUSONE_COLUMNS_SIMPLE
         if args.verbose:
             print('Assuming \'chr strand name plus1\' as columns in plusone file',
-                    file = sys.stderr)
+                  file=sys.stderr)
     else:
         p_file = args.plusone
         pos = PLUSONE_COLUMNS_DEFAULT
 
-    genome = Fasta(args.fasta, sequence_always_upper = True)
+    genome = Fasta(args.fasta, sequence_always_upper=True)
 
     if args.verbose:
-        print(f'Reading genome file {args.fasta}', file = sys.stderr)
+        print(f'Reading genome file {args.fasta}', file=sys.stderr)
 
-    with open(p_file, "r", encoding = "utf8") as plusone_file:
-        tsv_reader = csv.reader(plusone_file, delimiter = "\t")
-        next(tsv_reader) # Skip the first row, which is assumed to be the header
+    with open(p_file, "r", encoding="utf8") as plusone_file:
+        tsv_reader = csv.reader(plusone_file, delimiter="\t")
+        next(tsv_reader)  # Skip the first row, which is assumed to be the header
 
         if args.verbose:
-            print(f'Reading plusone file {p_file}', file = sys.stderr)
+            print(f'Reading plusone file {p_file}', file=sys.stderr)
 
         for row in tsv_reader:
             (chrom, strand, name, plus1) = (row[pos[0]], row[pos[1]], row[pos[2]], row[pos[3]])
@@ -169,41 +169,41 @@ def main():
 
             region_start = int(plus1) - extension
             region_stop = int(plus1) + extension
-            region_seq = genome.get_seq(chrom, region_start, region_stop, rc = False).seq
+            region_seq = genome.get_seq(chrom, region_start, region_stop, rc=False).seq
 
             region_name = f">{chrom} {name} {strand} {plus1} {region_start}:{region_stop}"
-            region_seq_rc = genome.get_seq(chrom, region_start, region_stop, rc = True).seq
+            region_seq_rc = genome.get_seq(chrom, region_start, region_stop, rc=True).seq
             region_name_rc = f">{chrom} {name} {strand} {plus1} {region_start}:{region_stop} rc"
 
             if args.output:
                 j = 0
                 for i in range(0, len(region_seq) - tile_length + step_size, step_size):
-                    print(f"{region_name} tile_{j}", file = out_file)
+                    print(f"{region_name} tile_{j}", file=out_file)
                     j = j + 1
-                    print(region_seq[i: i + tile_length], file = out_file)
+                    print(region_seq[i: i + tile_length], file=out_file)
                 j = 0
                 for i in range(0, len(region_seq_rc) - tile_length + step_size, step_size):
-                    print(f"{region_name_rc} tile_{j}", file = out_file)
+                    print(f"{region_name_rc} tile_{j}", file=out_file)
                     j = j + 1
-                    print(region_seq_rc[i: i + tile_length], file = out_file)
+                    print(region_seq_rc[i: i + tile_length], file=out_file)
             else:
                 j = 0
                 for i in range(0, len(region_seq) - tile_length + step_size, step_size):
-                    print(f"{region_name} tile_{j}", file = sys.stdout)
+                    print(f"{region_name} tile_{j}", file=sys.stdout)
                     j = j + 1
-                    print(region_seq[i: i + tile_length], file = sys.stdout)
+                    print(region_seq[i: i + tile_length], file=sys.stdout)
                 j = 0
                 for i in range(0, len(region_seq_rc) - tile_length + step_size, step_size):
-                    print(f"{region_name_rc} tile_{j}", file = sys.stdout)
+                    print(f"{region_name_rc} tile_{j}", file=sys.stdout)
                     j = j + 1
-                    print(region_seq_rc[i: i + tile_length], file = sys.stdout)
+                    print(region_seq_rc[i: i + tile_length], file=sys.stdout)
 
     if args.output:
         if not out_file.closed:
             out_file.close()
 
     if args.verbose:
-        print('End of script', file = sys.stderr)
+        print('End of script', file=sys.stderr)
 
 
 if __name__ == "__main__":
